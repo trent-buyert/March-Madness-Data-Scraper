@@ -29,9 +29,14 @@ html_content = driver.page_source
 soup = BeautifulSoup(html_content, "html.parser")
 table = soup.find("tbody")
 rows = table.find_all("tr")
+ppg_ranking = []
+ppg_stats = []
 for row in rows[:-1]:
     team_ranking = row.find('td', class_='Table__TD').text.strip()
     team_name = row.find_all('a', class_='AnchorLink')[1].text.strip()
-    print(f"{team_ranking}: {team_name}")
+    ppg_ranking.append({'ppg_rank': team_ranking, 'ppg_team name': team_name})
+
+df_ppg_rankings = pd.DataFrame(ppg_ranking)
+print(df_ppg_rankings)
 
 driver.close()
