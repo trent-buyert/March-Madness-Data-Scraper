@@ -3,6 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from bs4 import BeautifulSoup
 import pandas as pd
 import requests as rq
 
@@ -23,6 +24,14 @@ for _ in range(7):
     except Exception as e:
         print(f"An error occurred: {e}")
         break
+time.sleep(2)
+html_content = driver.page_source
+soup = BeautifulSoup(html_content, "html.parser")
+table = soup.find("tbody")
+rows = table.find_all("tr")
+for row in rows[:-1]:
+    team_ranking = row.find('td', class_='Table__TD').text.strip()
+    team_name = row.find_all('a', class_='AnchorLink')[1].text.strip()
+    print(f"{team_ranking}: {team_name}")
 
-time.sleep(5)
 driver.close()
