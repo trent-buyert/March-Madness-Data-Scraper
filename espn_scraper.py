@@ -39,13 +39,10 @@ for th in ths[1:]:
 stats_table = soup.find_all("tbody")[1]
 rows_stats = stats_table.find_all('tr', class_='Table__TR')
 stats_grid = []
-for row in rows_stats:
+for row in rows_stats[:-1]:
     stat_cells = row.find_all('td', class_='Table__TD')
     stats_row = [float(cell.get_text(strip=True)) for cell in stat_cells]
     stats_grid.append(stats_row)
-for y in range(len(stats_grid)):
-    for x in range(len(columns)):
-        print(f"{columns[x]} {stats_grid[y][x]}")
 
 table = soup.find("tbody")
 rows = table.find_all("tr")
@@ -53,7 +50,7 @@ ppg_ranking = []
 for row in rows[:-1]:
     team_ranking = row.find('td', class_='Table__TD').text.strip()
     team_name = row.find_all('a', class_='AnchorLink')[1].text.strip()
-    team_ranking = float(team_ranking)
+    team_ranking = int(team_ranking)
     ppg_ranking.append((team_name, team_ranking))
 
 
@@ -79,5 +76,6 @@ def create_team_stats_dataframe(team_rankings, column_names, rows_of_stats):
 
 
 df = create_team_stats_dataframe(ppg_ranking, columns, stats_grid)
-print(df)
+df.to_csv("2024_regular_season_offensive_stats.csv")
+
 driver.close()
