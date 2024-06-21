@@ -8,6 +8,7 @@ import pandas as pd
 import requests as rq
 
 ncaa_team_stats_url = "https://www.espn.com/mens-college-basketball/stats/team"
+additional_pages_url = "https://www.espn.com/mens-college-basketball/stats/team/_/season/2023"
 
 driver = webdriver.Chrome()
 driver.get(ncaa_team_stats_url)
