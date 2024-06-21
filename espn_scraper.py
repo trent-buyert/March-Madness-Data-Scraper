@@ -46,17 +46,38 @@ for row in rows_stats:
 for y in range(len(stats_grid)):
     for x in range(len(columns)):
         print(f"{columns[x]} {stats_grid[y][x]}")
-ppg_stats = []
-# table = soup.find("tbody")
-# rows = table.find_all("tr")
-# ppg_ranking = []
-# ppg_stats = []
-# for row in rows[:-1]:
-#     team_ranking = row.find('td', class_='Table__TD').text.strip()
-#     team_name = row.find_all('a', class_='AnchorLink')[1].text.strip()
-#     ppg_ranking.append({'ppg_rank': team_ranking, 'ppg_team name': team_name})
-#
-# df_ppg_rankings = pd.DataFrame(ppg_ranking)
-# print(df_ppg_rankings)
 
+table = soup.find("tbody")
+rows = table.find_all("tr")
+ppg_ranking = []
+for row in rows[:-1]:
+    team_ranking = row.find('td', class_='Table__TD').text.strip()
+    team_name = row.find_all('a', class_='AnchorLink')[1].text.strip()
+    team_ranking = float(team_ranking)
+    ppg_ranking.append((team_name, team_ranking))
+
+
+def create_team_stats_dataframe(team_rankings, column_names, rows_of_stats):
+    df_stats = pd.DataFrame(rows_of_stats, columns=column_names)
+
+    # Create a dictionary for team rankings
+    team_dict = {team: rank for team, rank in team_rankings}
+
+    # Add team names to the DataFrame
+    df_stats.insert(0, 'Team', [team for team, _ in team_rankings])
+
+    # Set the team names as the index
+    df_stats.set_index('Team', inplace=True)
+
+    # Add the rankings as a new column
+    df_stats['Ranking'] = [team_dict[team] for team in df_stats.index]
+
+    # Move the 'Ranking' column to the first position
+    df_stats = df_stats[['Ranking'] + column_names]
+
+    return df_stats
+
+
+df = create_team_stats_dataframe(ppg_ranking, columns, stats_grid)
+print(df)
 driver.close()
